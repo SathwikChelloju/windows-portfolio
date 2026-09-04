@@ -25,11 +25,26 @@ function App() {
   const [quickSettingsOpen, setQuickSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Windows 11 Boot Screen State (First visit check per session)
+  const [isBooting, setIsBooting] = useState(() => {
+    return !sessionStorage.getItem("hasBooted");
+  });
+
   const [wifiOn, setWifiOn] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
   const [saverOn, setSaverOn] = useState(false);
   const [volume, setVolume] = useState(80);
   const [brightness, setBrightness] = useState(100);
+
+  useEffect(() => {
+    if (isBooting) {
+      const bootTimer = setTimeout(() => {
+        setIsBooting(false);
+        sessionStorage.setItem("hasBooted", "true");
+      }, 2000);
+      return () => clearTimeout(bootTimer);
+    }
+  }, [isBooting]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -99,6 +114,29 @@ function App() {
         setQuickSettingsOpen(false);
       }}
     >
+      {/* WINDOWS 11 BOOT SCREEN ANIMATION */}
+      <AnimatePresence>
+        {isBooting && (
+          <motion.div
+            className="win-boot-screen"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="win-boot-content">
+              <div className="win-boot-logo-grid">
+                <span className="win-boot-square"></span>
+                <span className="win-boot-square"></span>
+                <span className="win-boot-square"></span>
+                <span className="win-boot-square"></span>
+              </div>
+              <div className="win-boot-spinner">
+                <div className="win-spinner-circle"></div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* BACKGROUND */}
       <div className="wallpaper-glow glow-a"></div>
       <div className="wallpaper-glow glow-b"></div>
@@ -595,6 +633,7 @@ function DesktopIcon({ app, onOpen }) {
       onDoubleClick={onOpen}
       onClick={(e) => {
         e.stopPropagation();
+        onOpen();
       }}
       title={`Open ${app.name}`}
     >
@@ -718,13 +757,12 @@ function WindowContent({ id, openWindow }) {
       src: "/Team1.jpg",
     },
     {
-      title: "ppreciation from the Principal — motivation to achieve more.",
+      title: "Appreciation from the Principal — motivation to achieve more.",
       src: "/principal.jpg",
     },
     { title: "Hackathon Winning Team", src: "/Team2.jpg" },
     { title: "Attended Ai Days Workshop", src: "/AIDAYS.jpeg" },
     { title: "Professional mindset. Personal growth.", src: "/profile.jpeg" },
-    // { title: "Smart India Hackathon", src: "/SIH.jpg" },
   ];
 
   const projectList = [
@@ -2027,6 +2065,7 @@ function AIAssistant({ openWindow }) {
     </div>
   );
 }
+
 /* =========================================
    TASKBAR
 ========================================= */
@@ -2111,7 +2150,7 @@ function Taskbar({
             <rect x="3" y="3" width="8" height="8" rx="1"></rect>
             <rect x="13" y="3" width="8" height="8" rx="1"></rect>
             <rect x="13" y="13" width="8" height="8" rx="1"></rect>
-            <rect x="3" y="13" width="8" height="8" rx="Apps"></rect>
+            <rect x="3" y="13" width="8" height="8" rx="1"></rect>
           </svg>
         </button>
 
