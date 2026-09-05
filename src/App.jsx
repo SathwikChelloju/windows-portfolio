@@ -827,7 +827,7 @@ function WindowContent({ id, openWindow }) {
         "Custom AI assistant widget",
       ],
       linkType: "live",
-      linkUrl: "https://example.com/portfolio",
+      linkUrl: "https://sathwik-portfolio-windows.vercel.app/",
     },
     {
       title: "Agriculture Voice Bot",
